@@ -207,10 +207,7 @@ def not_normal_info(idx,k):
 
 
 def find_year(soup):
-    global Normal_Or_NotNormal
-    if Normal_Or_NotNormal:
-        print('normal')
-
+    try:
         main_content = soup.find('div', class_="main-content")
 
         specs_tab_container = main_content.find('div', class_="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__07jlF")
@@ -223,7 +220,8 @@ def find_year(soup):
                 value = feature.find('span', class_="feature_drive-cfs__listing__feature__value-label__pfDJo")
                 if value:
                     return value.text.strip()
-    return None
+    except:
+        pass
 
     
 
