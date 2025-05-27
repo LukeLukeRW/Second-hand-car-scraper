@@ -41,6 +41,8 @@ def main(car_make):
     info = parse_info(id_links)
 
 
+
+
 def parse_id_links(all_cars_html):
     all_ids_links = []
     for j in all_cars_html:
@@ -72,7 +74,7 @@ def parse_info(id_links):
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
         print()
-        
+
         print(url)
 
         vheicle = find_vheicle(soup)
@@ -80,6 +82,8 @@ def parse_info(id_links):
 
         price = find_price(soup)
         print(price)
+
+        year = find_year(soup)
 
         other_info = other_infomation(soup)
 
@@ -104,19 +108,19 @@ def find_price(soup):
 
 
 def other_infomation(soup):
-    Normal_Or_NotNormal = None
 
 
     specs = soup.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__wrapper__RIIAm")
     all_specs = specs.findAll('li',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-item__fzCI1")
 
     for idx, k in enumerate(all_specs):
+        Normal_Or_NotNormal = None
         idx = idx+1
 
         if idx == 1:
             Kilometers = k.find('div',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-details__6M8L2")
             Kilometers = Kilometers.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-            print(Kilometers)
+            # print(Kilometers)
 
         if idx == 2:
             Normal_Or_NotNormal = k.find('h4',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-heading__r9T0S").text
@@ -160,7 +164,7 @@ def other_infomation(soup):
 #FAAAAAAAAAALLLLLSEEE
         if Normal_Or_NotNormal == False:
             if idx == 3:
-                print("Not normal not normal")
+                # print("Not normal not normal")
                 Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
                 Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
                 print(Engine_type)
@@ -182,8 +186,11 @@ def other_infomation(soup):
 
 
 
+def find_year(soup):
+    year = soup.find('div',class_="main-content")
+    year = year.find('div',class_="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__07jlF")
 
-
+    quit()
 
 
 #not apart of parse info
@@ -236,3 +243,10 @@ if __name__ == "__main__":
         break
 print('quit')
 driver.quit()
+
+
+
+
+
+# class="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__content__SA_4V"
+# class="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__content__SA_4V listing-details-tabs_d-cfs-listing-details-tabs__tab-container__content--active__X9FTT"
