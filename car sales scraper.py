@@ -83,9 +83,12 @@ def parse_info(id_links):
         price = find_price(soup)
         print(price)
 
-        year = find_year(soup)
-
         other_info = other_infomation(soup)
+
+        year = find_year(soup)
+        print(year)
+
+        
 
 #apart of parse info
 def find_vheicle(soup):
@@ -108,13 +111,16 @@ def find_price(soup):
 
 
 def other_infomation(soup):
+    global Normal_Or_NotNormal
 
 
     specs = soup.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__wrapper__RIIAm")
     all_specs = specs.findAll('li',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-item__fzCI1")
 
+
     for idx, k in enumerate(all_specs):
         Normal_Or_NotNormal = None
+        all_infomation = None
         idx = idx+1
 
         if idx == 1:
@@ -133,64 +139,93 @@ def other_infomation(soup):
 
         #When Normal:
         if Normal_Or_NotNormal == True:
+            all_infomation = normal_info(idx,k)
 
-            if idx == 2:
-                Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
-                Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Engine_type)
+        elif Normal_Or_NotNormal == False:
+            all_infomation = not_normal_info(idx,k)
 
-            elif idx == 4:
-                Body_Type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Body_Type)
+        if all_infomation:
+            return all_infomation
+    
 
-            elif idx == 5:
-                Drive_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Drive_type)
+def normal_info(idx,k):
+    if idx == 2:
+        Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
+        Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Engine_type)
 
-            elif idx == 6:
-                Fuel_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Fuel_type)
+    elif idx == 4:
+        Body_Type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Body_Type)
 
-            elif idx == 7:
-                Fuel_efficiency =k.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Fuel_efficiency)
+    elif idx == 5:
+        Drive_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Drive_type)
 
-            elif idx == 8:
-                Transmission = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Transmission)
+    elif idx == 6:
+        Fuel_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Fuel_type)
+
+    elif idx == 7:
+        Fuel_efficiency =k.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Fuel_efficiency)
+
+    elif idx == 8:
+        Transmission = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Transmission)
+#engine type - body type - drive type - fuel type - fuel efficiency - transmission  6
 
 
+#engine type - year - body type - fuel type - transmission 5 
+def not_normal_info(idx,k):
+    
+    if idx == 2:
+        year = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
+        year = year.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        years = 2025 - int(year.split(' ')[0])
+        print(years)
 
-#FAAAAAAAAAALLLLLSEEE
-        if Normal_Or_NotNormal == False:
-            if idx == 3:
-                # print("Not normal not normal")
-                Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
-                Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Engine_type)
-            
-            elif idx == 5:
-                Body_Type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Body_Type)
+    if idx == 3:
+        # print("Not normal not normal")
+        Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
+        Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Engine_type)
+    
+    elif idx == 5:
+        Body_Type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Body_Type)
 
-            elif idx == 6:
-                Fuel_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Fuel_type)
+    elif idx == 6:
+        Fuel_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Fuel_type)
 
-            elif idx == 7:
-                Transmission = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-                print(Transmission)
+    elif idx == 7:
+        Transmission = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+        print(Transmission)
 
-        else:
-            pass
 
 
 
 def find_year(soup):
-    year = soup.find('div',class_="main-content")
-    year = year.find('div',class_="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__07jlF")
+    global Normal_Or_NotNormal
+    if Normal_Or_NotNormal:
+        print('normal')
 
-    quit()
+        main_content = soup.find('div', class_="main-content")
+
+        specs_tab_container = main_content.find('div', class_="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__07jlF")
+
+        specs_tab = specs_tab_container.find_all('div', class_="listing-details-tabs_d-cfs-listing-details-tabs__tab-container__content__SA_4V")[2]  # Index 2 = "Specs"
+
+        for feature in specs_tab.find_all('div', class_="feature_drive-cfs__listing__feature__wrapper__Sdpnj"):
+            name = feature.find('div', class_="feature_drive-cfs__listing__feature__name__xtWoi")
+            if name and name.text.strip() == "Year":
+                value = feature.find('span', class_="feature_drive-cfs__listing__feature__value-label__pfDJo")
+                if value:
+                    return value.text.strip()
+    return None
+
+    
 
 
 #not apart of parse info
