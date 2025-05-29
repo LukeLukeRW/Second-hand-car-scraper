@@ -23,6 +23,7 @@ def main(car_make):
     global driver
 
     all_cars_html = []
+
     for i in range(13,101):
         print(i)
 
@@ -86,7 +87,8 @@ def parse_info(id_links):
         other_info = other_infomation(soup)
 
         year = find_year(soup)
-        print(year)
+        if year:
+            print(year)
 
         
 
@@ -269,7 +271,7 @@ def outofrange():
 
 if __name__ == "__main__":
     filee = "all_cars.txt"
-    driver = undetected_chromedriver.Chrome()
+    driver = webdriver.Chrome()
 
     for i in file_parsing(filee):
         main(i)
