@@ -24,7 +24,7 @@ def main(car_make):
 
     all_cars_html = []
 
-    for i in range(13,101):
+    for i in range(14,101):
         print(i)
 
         url = f"http://drive.com.au/cars-for-sale/search/used/all/all/{car_make}/page/{i}"
@@ -39,7 +39,15 @@ def main(car_make):
 
     id_links = parse_id_links(all_cars_html)
     # print(id_links)
+
     info = parse_info(id_links)
+    print(info)
+    '''
+    [ {brand: [{year: year}, {price:price}]
+    }
+    
+    ]
+    '''
 
 
 
@@ -70,6 +78,8 @@ def parse_info(id_links):
     VIN
     '''
     for Id in id_links:
+        all_of_the_info = []
+
         url = f"https://www.drive.com.au/cars-for-sale/car/{Id}/"
         driver.get(url)
         soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -84,13 +94,29 @@ def parse_info(id_links):
         price = find_price(soup)
         print(price)
 
-        other_info = other_infomation(soup)
+        other_info = other_infomation(soup) # lists inside of it [[all info, 6, or 7], True or False]
+        print(f"Ohter infoamtioM:::::::    {other_info}")
+        if other_info[1] == True:#if its normal, i need to take the year, otherwise i already have the year
+            year = find_year(soup)
 
-        year = find_year(soup)
-        if year:
-            print(year)
+            fully_parsed_infomation = parse_parse_info(url, vheicle, price, year, other_info)
+        else:
+            fully_parsed_infomation = parse_parse_info(url, vheicle, price, None, other_info)
 
         
+def parse_parse_info(url, vheicle, price, year, other_info):
+    if year is None: #if the year is none, this means other info[0][2] == year
+        print(url)
+        print(vheicle)
+        print(price)
+        
+        print(other_info)
+    else:
+        print(url)
+        print(vheicle)
+        print(price)
+        print(year)
+        print(other_info)
 
 #apart of parse info
 def find_vheicle(soup):
@@ -115,16 +141,14 @@ def find_price(soup):
 def other_infomation(soup):
     global Normal_Or_NotNormal
 
-
     specs = soup.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__wrapper__RIIAm")
     all_specs = specs.findAll('li',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-item__fzCI1")
 
-
+    all_infomation=[]
+    Normal_Or_NotNormal = None
     for idx, k in enumerate(all_specs):
-        Normal_Or_NotNormal = None
-        all_infomation = None
+        # Normal_Or_NotNormal = None
         idx = idx+1
-
         if idx == 1:
             Kilometers = k.find('div',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-details__6M8L2")
             Kilometers = Kilometers.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
@@ -141,40 +165,48 @@ def other_infomation(soup):
 
         #When Normal:
         if Normal_Or_NotNormal == True:
-            all_infomation = normal_info(idx,k)
+            # print(f"Idx True: {idx}")
+            # print(f"normal info: {normal_info(idx,k)}")
+            all_infomation.append(normal_info(idx,k))
+        
+        if Normal_Or_NotNormal == False:
+            # print(f"Idx False: {idx}")
+            # print(f"Not normal info: {not_normal_info(idx,k)}")
+            all_infomation.append(not_normal_info(idx,k))
 
-        elif Normal_Or_NotNormal == False:
-            all_infomation = not_normal_info(idx,k)
+    print(f"all informationnn: {all_infomation}")
+    time.sleep(100)
 
-        if all_infomation:
-            return all_infomation
+    return [all_infomation,Normal_Or_NotNormal]
+        
     
 
 def normal_info(idx,k):
     if idx == 2:
         Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
         Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Engine_type)
+        return Engine_type
 
     elif idx == 4:
         Body_Type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Body_Type)
+        return Body_Type
 
     elif idx == 5:
         Drive_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Drive_type)
+        return Drive_type
 
     elif idx == 6:
         Fuel_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Fuel_type)
+        return Fuel_type
 
     elif idx == 7:
         Fuel_efficiency =k.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Fuel_efficiency)
+        return Fuel_efficiency
 
     elif idx == 8:
         Transmission = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Transmission)
+        return Transmission
+
 #engine type - body type - drive type - fuel type - fuel efficiency - transmission  6
 
 
@@ -185,26 +217,28 @@ def not_normal_info(idx,k):
         year = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
         year = year.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
         years = 2025 - int(year.split(' ')[0])
-        print(years)
+        return years
 
     if idx == 3:
-        # print("Not normal not normal")
         Engine_type = k.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-details__uy5Jk")
         Engine_type = Engine_type.find('p', class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Engine_type)
+        return Engine_type
+
     
     elif idx == 5:
         Body_Type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Body_Type)
+        return Body_Type
 
     elif idx == 6:
         Fuel_type = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Fuel_type)
+        return Fuel_type
+
 
     elif idx == 7:
         Transmission = k.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
-        print(Transmission)
+        return Transmission
 
+    
 
 
 
@@ -235,11 +269,12 @@ def get_page_of_cars():
     soup = BeautifulSoup(driver.page_source, "html.parser")
 
     a = soup.find('div', class_="search_drive-cfs__results__KaGCe")
-    a = a.find('div', class_="listings_drive-cfs__listings__wrapper__HYl4u")
 
+    a = a.find('div', class_="listings_drive-cfs__listings__wrapper__HYl4u")
+    
     all_cars_html = a.findAll('div', class_="listing-details-card_drive-marketplace__listing-card__oQwPi")
 
-
+    # print(all_cars_html)
     return all_cars_html
 
 def outofrange():
