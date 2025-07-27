@@ -74,7 +74,16 @@ def parse_info(id_links,brand):
         price = find_price(soup)
 
         other_info = other_infomation(soup) # lists inside of it [[all info, 6, or 7], True or False]
-
+        
+        print(f"https://www.drive.com.au/cars-for-sale/car/{Id}/")
+        print(vheicle)
+        print(location)
+        print()
+        print(price)
+        print()
+        print(other_info)
+        print("\n\n")
+        
         if other_info[1]:  #THIS IS NORMAL when other_info[1] == True in other words
             year = find_year(soup)
             year_or_warranty = year
