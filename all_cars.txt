@@ -20,7 +20,6 @@ CUPRA
 CUPRA
 Chery
 Chery
-
 Chevrolet
 Chevrolet
 Chrysler
@@ -39,7 +38,6 @@ Ford
 Ford
 Ford-Performance-Vehicles
 Ford-Performance-Vehicles
-
 Foton
 Foton
 GMC
@@ -50,8 +48,8 @@ Geely
 Geely
 Genesis
 Genesis
-Great Wall
-Great Wall
+Great-Wall
+Great-Wall
 Haval
 Haval
 Holden
@@ -88,8 +86,8 @@ LDV
 LDV
 Lamborghini
 Lamborghini
-Land Rover
-Land Rover
+Land-Rover
+Land-Rover
 Leapmotor
 Leapmotor
 Lexus
