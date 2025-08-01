@@ -1,7 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
-
+import time
 
 def list_car_brands(filee):
     type_of_cars=[]
@@ -16,7 +16,7 @@ def main(car_make):
 
     all_cars_html = []
 
-    for i in range(1,101):
+    for i in range(1,999):
         # STEP 1... ok so balsically this is step 1. Car brand goes in to this fucntion.
         print(i)
 
@@ -61,7 +61,7 @@ def parse_id_links(all_cars_html):
 def parse_info(id_links,brand):
     global driver
     all_cars_data = []
-
+    count = 0
     for Id in id_links:#id links looks at each individual car via ID.
 
         #now on specific webpage of just the car.
@@ -71,23 +71,13 @@ def parse_info(id_links,brand):
         try:
             location = soup.findAll('a',class_="breadcrumbs_drive-breadcrumbs__back__6926m")
             location = location[3].text.strip()
-        except IndexError:
+        except:
             location = "Location Unknown"
-            
         vheicle = find_vheicle(soup)
         price = find_price(soup)
 
         other_info = other_infomation(soup) # lists inside of it [[all info, 6, or 7], True or False]
-        
-        print(f"https://www.drive.com.au/cars-for-sale/car/{Id}/")
-        print(vheicle)
-        print(location)
-        print()
-        print(price)
-        print()
-        print(other_info)
-        print("\n\n")
-        
+
         if other_info[1]:  #THIS IS NORMAL when other_info[1] == True in other words
             year = find_year(soup)
             year_or_warranty = year
@@ -98,6 +88,10 @@ def parse_info(id_links,brand):
 
         car_data = parse_parse_info(url, vheicle, price, year_or_warranty, other_info,brand)
         all_cars_data.append(car_data)
+
+        count +=1
+        print(f"{count}: {url}")
+
     return all_cars_data
 
 def parse_parse_info(url, vheicle, price, year_or_warrenty, other_info1, brand):
@@ -124,8 +118,9 @@ def parse_parse_info(url, vheicle, price, year_or_warrenty, other_info1, brand):
             aa = j[1]
             if aa is not None:
                 all_car_details[words_tag] = aa
-        except:
-            pass
+        except (TypeError, IndexError) as e:
+            print(f"Error processing attribute: {j}, error: {e}")
+    all_car_details["Url"] = url
     return {brand: [all_car_details]}
 
 
@@ -140,9 +135,13 @@ def warranty_check(soup):
 
 #apart of parse info
 def find_vheicle(soup):
+    try:
         vheicle = soup.find('div', class_="aside listing-left-aside single-listing_drive-listing__info-wrapper__fBl2H")
         vheicle = vheicle.find('h1', class_="carInfo_drive-cfs__car-info__listing-details__name___R2if").text
         return vheicle
+    except:
+        return "No vheicle found"
+
 
 #apart of parse info
 def find_price(soup):
@@ -154,13 +153,14 @@ def find_price(soup):
     return price
 
 
-
-
 def other_infomation(soup):
     global Normal_Or_NotNormal
 
     specs = soup.find('div', class_="listing-specs-and-nused_drive-cfs__listing-specs__wrapper__RIIAm")#this is the overall with the 8 different specs in them see below in all_specs
-    all_specs = specs.findAll('li',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-item__fzCI1")#these are the individual specs (there are like 8 of them)
+    try:
+        all_specs = specs.findAll('li',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-item__fzCI1")#these are the individual specs (there are like 8 of them)
+    except:
+        all_specs = []
 
     all_infomation=[]
     Normal_Or_NotNormal = None#ok so there are 2 different ummm car speicifcs like theres a normal one and a 'non' normal one i guess 
@@ -170,6 +170,7 @@ def other_infomation(soup):
         if idx == 1:
             Kilometers = k.find('div',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-details__6M8L2")
             Kilometers = Kilometers.find('p',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-info__j4TP4").text
+            all_infomation.append(["Kilometers", Kilometers])
 
         if idx == 2:
             Normal_Or_NotNormal = k.find('h4',class_="listing-specs-and-nused_drive-cfs__listing-specs__spec-name-heading__r9T0S").text
@@ -179,7 +180,6 @@ def other_infomation(soup):
             else:
                 Normal_Or_NotNormal = False
         
-
         #When Normal:
         if Normal_Or_NotNormal == True:
             normal_infomation = normal_info(idx,k)
@@ -193,7 +193,7 @@ def other_infomation(soup):
     return [all_infomation,Normal_Or_NotNormal]#list with all info, and [1] tells us if its classified as 'normal' or not 
     #return [ [...] , [True/False]]
         
-    
+
 
 def normal_info(idx,k):
     if idx == 2:
@@ -282,6 +282,7 @@ def get_page_of_cars():
     all_cars_html = a.findAll('div', class_="listing-details-card_drive-marketplace__listing-card__oQwPi")
 
     return all_cars_html
+    
 
 def outofrange():
     global driver
@@ -302,12 +303,13 @@ def outofrange():
         finding_start_error = None
 
     if finding_end != None or finding_start_error != None:
-        print("stop going")
+        # print("stop going")
         return True
-    print("keep going")
+    # print("keep going")
     return False
 
 if __name__ == "__main__":
+    start = time.time()
     filee = "all_cars.txt"
     driver = webdriver.Chrome()
 
@@ -322,7 +324,7 @@ if __name__ == "__main__":
             all_car_details = car_dict[brand][0]
             all_car_details['brand'] = brand
             all_car_data.append(all_car_details)
-        
+        # break
         # break ###
     ALLDATAframe = pd.DataFrame(all_car_data)
     x = []
@@ -336,4 +338,5 @@ if __name__ == "__main__":
     print(f"How many cars: {len(ALLDATAframe)}.")
 
 print('quit')
+print(f"\n This took {time.time()-start} seconds to run.")
 driver.quit()
