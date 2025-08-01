@@ -68,8 +68,12 @@ def parse_info(id_links,brand):
         url = f"https://www.drive.com.au/cars-for-sale/car/{Id}/"
         driver.get(url)
         soup = BeautifulSoup(driver.page_source, "html.parser")
-        location = soup.findAll('a',class_="breadcrumbs_drive-breadcrumbs__back__6926m")
-        location = location[3].text.strip()
+        try:
+            location = soup.findAll('a',class_="breadcrumbs_drive-breadcrumbs__back__6926m")
+            location = location[3].text.strip()
+        except IndexError:
+            location = "Location Unknown"
+            
         vheicle = find_vheicle(soup)
         price = find_price(soup)
 
@@ -120,8 +124,8 @@ def parse_parse_info(url, vheicle, price, year_or_warrenty, other_info1, brand):
             aa = j[1]
             if aa is not None:
                 all_car_details[words_tag] = aa
-        except (TypeError, IndexError) as e:
-            print(f"Error processing attribute: {j}, error: {e}")
+        except:
+            pass
     return {brand: [all_car_details]}
 
 
