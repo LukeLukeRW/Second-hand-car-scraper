@@ -91,6 +91,7 @@ def parse_info(id_links,brand):
 
         count +=1
         print(f"{count}: {url}")
+        print(f"Vheicle: {vheicle}, Price: {price}\n Location: {location} \n other info: {other_info}")
 
     return all_cars_data
 
@@ -125,13 +126,16 @@ def parse_parse_info(url, vheicle, price, year_or_warrenty, other_info1, brand):
 
 
 def warranty_check(soup):
-    warrenty = soup.find('div', class_="nused-warranty_drive-cfs-nused-warranty__8oMUk")
-    warrenty = warrenty.find('div', class_="nused-warranty_drive-cfs-nused-warranty__details__estimations__09aGE")
-    warrenty = warrenty.find('div',class_="nused-warranty_drive-cfs-nused-warranty__details__estimations__details__mGGCb").text
-    warrenty = warrenty.split('/')[0]#looks something like "2 years and 6 months / Unlimited kms"
-    
-    return warrenty
-    
+    try:
+
+        warrenty = soup.find('div', class_="nused-warranty_drive-cfs-nused-warranty__8oMUk")
+        warrenty = warrenty.find('div', class_="nused-warranty_drive-cfs-nused-warranty__details__estimations__09aGE")
+        warrenty = warrenty.find('div',class_="nused-warranty_drive-cfs-nused-warranty__details__estimations__details__mGGCb").text
+        warrenty = warrenty.split('/')[0]#looks something like "2 years and 6 months / Unlimited kms"
+        
+        return warrenty
+    except:
+        return "False"
 
 #apart of parse info
 def find_vheicle(soup):
